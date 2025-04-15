@@ -273,6 +273,7 @@ export class RaindropRenderer
     private mesh: Mesh;
 
     private raindropBuffer = new GLArrayBuffer(RaindropInstanceStruct, 3000);
+    private dropletSeed = randomRange(0, 1000);
 
     // deubg: DebugLayerRenderer = new DebugLayerRenderer();
 
@@ -490,5 +491,58 @@ export class RaindropRenderer
         this.matrlDroplet.sizeRange = vec2(...this.options.dropletSize);
         this.matrlDroplet.seed = randomRange(0, 133);
         this.renderer.drawMeshProceduralInstance(this.mesh, this.matrlDroplet, count);
+    }
+
+    destroy()
+    {
+        // Destroy Render Textures
+        this.background?.destroy();
+        this.raindropComposeTex?.destroy();
+        this.dropletTexture?.destroy();
+        this.mistTexture?.destroy();
+        this.blurryBackground?.destroy();
+        this.mistBackground?.destroy();
+
+        // Destroy Blur Renderer and its resources
+        this.blurRenderer?.destroy();
+
+        // Destroy loaded textures
+        this.raindropTex?.destroy();
+        this.originalBackground?.destroy();
+
+        // Destroy materials (assuming their shaders are destroyed internally)
+        this.matrlCompose?.destroy();
+        this.matrlRaindrop?.destroy();
+        this.matrlDroplet?.destroy();
+        this.matrlErase?.destroy();
+        this.matrlMist?.destroy();
+        this.matrlMistCompose?.destroy();
+
+        // Destroy mesh and buffers
+        this.mesh?.destroy();
+        this.raindropBuffer?.destroy();
+
+        // Finally, destroy the underlying ZograRenderer instance
+        this.renderer?.destroy();
+
+        // Nullify references to potentially help GC
+        this.background = null as any;
+        this.raindropComposeTex = null as any;
+        this.dropletTexture = null as any;
+        this.mistTexture = null as any;
+        this.blurryBackground = null as any;
+        this.mistBackground = null as any;
+        this.blurRenderer = null as any;
+        this.raindropTex = null as any;
+        this.originalBackground = null as any;
+        this.matrlCompose = null as any;
+        this.matrlRaindrop = null as any;
+        this.matrlDroplet = null as any;
+        this.matrlErase = null as any;
+        this.matrlMist = null as any;
+        this.matrlMistCompose = null as any;
+        this.mesh = null as any;
+        this.raindropBuffer = null as any;
+        this.renderer = null as any;
     }
 }

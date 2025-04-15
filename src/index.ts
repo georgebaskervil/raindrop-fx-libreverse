@@ -12,6 +12,7 @@ class RaindropFX
     public options: Options;
     public renderer: RaindropRenderer;
     public simulator: RaindropSimulator;
+    private isDestroyed = false;
 
     private animHandle = 0;
 
@@ -71,11 +72,13 @@ class RaindropFX
     
     async start()
     {
+        if (this.isDestroyed) return;
         await this.renderer.loadAssets();
 
         let lastFrameTime = 0;
         const update = (delay: number) =>
         {
+            if (this.isDestroyed) return;
             const dt = (delay - lastFrameTime) / 1000;
             lastFrameTime = delay;
             const time = <Time>{
@@ -93,11 +96,14 @@ class RaindropFX
     
     stop()
     {
+        if (this.isDestroyed) return;
         cancelAnimationFrame(this.animHandle);
+        this.animHandle = 0;
     }
 
     resize(width: number, height: number)
     {
+        if (this.isDestroyed) return;
         this.options.width = width;
         this.options.height = height;
         this.options.viewport = new Rect(vec2.zero(), vec2(width, height));
@@ -106,18 +112,24 @@ class RaindropFX
 
     async setBackground(background: string | TextureData)
     {
+        if (this.isDestroyed) return;
         this.renderer.options.background = background;
         await this.renderer.reloadBackground();
     }
 
     destroy()
     {
+        if (this.isDestroyed) return;
         this.stop();
-        this.renderer.renderer.destroy();
+        if (this.renderer) {
+            this.renderer.destroy();
+        }
+        this.isDestroyed = true;
     }
     
     private update(time: Time)
     {
+        if (this.isDestroyed) return;
         this.simulator.update(time);
 
         this.renderer.render(this.simulator.raindrops, time);
@@ -125,4 +137,4 @@ class RaindropFX
 
 }
 
-export = RaindropFX;
+export default RaindropFX;

@@ -98,4 +98,18 @@ export class BlurRenderer
         }
         return input;
     }
+
+    destroy()
+    {
+        if (this.steps)
+        {
+            for (const texture of this.steps)
+            {
+                texture?.destroy();
+            }
+            this.steps = []; // Clear the array
+        }
+        this.mateiralBlur?.destroy();
+        // this.renderer is likely owned by RaindropRenderer, so don't destroy it here.
+    }
 }
